@@ -18,8 +18,7 @@ export default interface Commande {
     reference: string;
     client: string;
     address: address;
-
-    valid: boolean;
+    rep2?: string|null;
     articles : Array<Article>;
 }
 

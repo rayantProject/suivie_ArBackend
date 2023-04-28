@@ -11,4 +11,5 @@ export default interface Article {
     delai? : string | null;
     precedent? : string | null;
     expedition? : Expedition;
+    valid: boolean;
 }

@@ -7,6 +7,7 @@ import { Request, Response } from 'express';
     }
     export function error404(req: Request, res: Response) {
         res.status(404).send({ error: 'Not found' });
+        
     }
 
     export function error401(req: Request, res: Response) {
