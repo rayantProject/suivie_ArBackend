@@ -20,56 +20,37 @@ const returnRep = async (path: string, next: NextFunction ) => {
         const result = await pool.request()
         .input('repName', mssql.VarChar, decodeURIComponent(path))
         .query( `use ${dbname} select CTCTUTIL4, CTCTUTIL5 from CONTACT where CTKTSOC='100' and CTCTUTIL6= @repName`);
-        const ctctutil5 : string = result.recordset[0].CTCTUTIL5.toUpperCase();
-        const ctctutil4 : string = result.recordset[0].CTCTUTIL4.toUpperCase();
-        return {
-            reps: ctctutil5.split(' ').join('').split(','),
-            loginRepName: ctctutil4.trim()
-        }
-        
+        const ctctutil5 = String(result.recordset[0].CTCTUTIL5.toUpperCase());
+        return ctctutil5.split(' ').join('').split(',')
     } catch (err) {
         next(err);
-        return {
-            reps: [],
-            loginRepName: ''
-    }
 }
 }
 
 export const getCommandeByRep = async (req: Request, res: Response, next: NextFunction) => {
 
     try {
-        const {reps, loginRepName} = await returnRep(req.params.user, next);
-        if (reps.length === 0) 
+        const reps = await returnRep(req.params.user, next);
+        if (reps == undefined || reps.length === 0) 
         {
             error401(req, res);
-        }
+        } else {
         const result = ((reps.length === 1) && (reps[0] === '*' || reps[0] === 'Tous' || reps[0] === 'tous' || reps[0] === 'TOUS')) ?
         await pool.request().query(request) :
         await pool.request()
         // .query(request+` and l.LCCTCREP1 in (${reps.map((v: string) => `'${v}'`).join(',')}) `)
-        .query(request+` and (l.LCCTCREP1 in (${reps.map((v: string) => `'${v}'`).join(',')}) and l.LCCTCREP1 not in ('GA','GC')) or l.LCCTCREP2 in (${reps.map((v: string) => `'${v}'`).join(',')}) `)
-        res.status(200).send(
-            {
-                loginRepName: loginRepName,
-                representants: transformRequestToCommandeByReps(result.recordset)
-            }
-        );
+        .query(request+` and ((l.LCCTCREP1 in (${reps.map((v: string) => `'${v}'`).join(',')}) and l.LCCTCREP1 not in ('GA','GC')) or l.LCCTCREP2 in (${reps.map((v: string) => `'${v}'`).join(',')})) `)
+       
+        res.status(200).send(transformRequestToCommandeByReps(result.recordset));
 
+        }
     } catch (err: any) {
         next(err);
     }
 }
 
 
-export const getRepLoginName = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const {loginRepName} = await returnRep(req.params.user, next);
-        res.status(200).send(loginRepName);
-    } catch (err: any) {
-        next(err);
-    }
-}
+
 
 export const downloadAr = async (req: Request, res: Response, next: NextFunction) => {
     // mount -t cifs  //192.168.100.27/pmisoft/SuiviAR /mnt/sharedDir/ -o username=Info,password=Info22!

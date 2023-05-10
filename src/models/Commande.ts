@@ -1,3 +1,4 @@
+
 import Message from './Message';
 
 import Article  from './Article';
@@ -19,6 +20,7 @@ export default interface Commande {
     client: string;
     address: address;
     rep2?: string|null;
+    messages?: Array<Message> | null;
     articles : Array<Article>;
 }
 

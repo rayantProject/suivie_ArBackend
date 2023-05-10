@@ -2,7 +2,7 @@ import express, { Request, Response , NextFunction} from 'express';
 import * as ErrorHandle from 'src/tools/errorHandle';
 import routes from './routes/routes';
 import cors from 'cors';
-// import logger from './middleware/logger';
+import logger from './middleware/logger';
 import ipFilter from './middleware/IpFilter';
 
 
@@ -25,8 +25,8 @@ import ipFilter from './middleware/IpFilter';
 
 const app = express();
 const port = process.env.PORT || 3000;
-// app.set('trust proxy', true);
-// app.set('trust proxy', 'loopback');
+app.set('trust proxy', true);
+app.set('trust proxy', 'loopback');
 app.use(logger);
 // app.use(ipFilter);
 app.use(express.json());
@@ -51,7 +51,18 @@ if (err.code === 'EADDRINUSE') {
 }
 });
 
+app.use(
+    (req: Request, res: Response, next: NextFunction) => {
+        const referer = req.headers.referer || req.headers.referrer;
 
+        if (referer && referer.includes('lec69009.sharepoint') || referer && referer.includes('localhost')) {
+            next();
+        }else{
+            
+            res.status(401).send({ error: 'Unauthorized' });
+        }
+    }
+);
 app.use('/api', routes);
 app.use("*",  ErrorHandle.error404);
 app.use(ErrorHandle.error500);
