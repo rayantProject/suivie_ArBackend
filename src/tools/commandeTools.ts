@@ -3,6 +3,7 @@ import CommandeByRep from "src/models/CommandeByRep";
 import Article from "src/models/Article";
 
 
+
 interface requestResult {
     LCKTNUMERO: string;
     LCCTCREP2: string | null;
@@ -69,16 +70,12 @@ export default function transformRequestToCommandeByReps(request: any): Array<Co
     const commandesByReps: Array<CommandeByRep> = [];
 
     request.map((item: requestResult) => {
-        const rep = item.LCCTCREP1.trim(),
-            rep2 = (item.LCCTCREP2 !== null) ? item.LCCTCREP2.split(" ").join('') == "" ? null : item.LCCTCREP2 : null,
-
-    commande: MapOfRequestResult = {
+        const   commande: MapOfRequestResult = {
         cde: item.LCKTNUMERO,
             reference: item.ECCTREFCDE.trim(),
             client: item.ECCTNOM.trim(),
-            rep2 : rep2,
-            repName:  rep,
-            // repName: rep,
+            rep2 : (item.LCCTCREP2 !== null) ? item.LCCTCREP2.split(" ").join('') == "" ? null : item.LCCTCREP2 : null,
+            repName:  item.LCCTCREP1.trim(),
             address : {
                 tel: (item.ECCTRUE1LI  !== null) ? item.ECCTRUE1LI.split(" ").join('') == "" ? null : item.ECCTRUE1LI.trim() : null  ,
                 city: (item.ECCTVILLIV !== null) ? item.ECCTVILLIV.split(" ").join('') == "" ? null : item.ECCTVILLIV.trim() : null,
@@ -134,7 +131,8 @@ export default function transformRequestToCommandeByReps(request: any): Array<Co
         }
     });
 
-return commandesByReps
+return commandesByReps.sort((a:CommandeByRep, b: CommandeByRep) => a.repName.localeCompare(b.repName))
+
 }
 
 

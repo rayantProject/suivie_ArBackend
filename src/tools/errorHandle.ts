@@ -11,7 +11,7 @@ import { Request, Response } from 'express';
     }
 
     export function error401(req: Request, res: Response) {
-        res.status(401).send({ error: 'Unauthorized' });
+        res.status(401).send({ error: `Unauthorized` });
     }
 
 
