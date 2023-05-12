@@ -6,6 +6,7 @@ import Message from 'src/models/Message';
 const dbname = process.env.DB_NAME;
 const pool = new mssql.ConnectionPool(config);
 
+
 export const getMessages = async (req: Request, res: Response, next: NextFunction) => {
     try {
         await pool.connect();
@@ -38,7 +39,7 @@ export const createMessage = async (req: Request, res: Response, next: NextFunct
         const result = await pool.request().query(`
         USE ${dbname}
         INSERT INTO MESSAGES (LCKTNUMERO, SHP_LOGIN, REPRESENTANT, MESSAGE_TEXT)
-        VALUES (${req.body.cde}, '${req.body.login}', '${req.body.rep}', '${req.body.message}')`);
+        VALUES ('${req.body.cde}', '${req.body.login}', '${req.body.rep}', '${req.body.message}')`);
         res.status(200).send({"message": "message created"});
     } catch (err: any) {
         next(err);
