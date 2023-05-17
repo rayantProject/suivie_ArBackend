@@ -37,6 +37,8 @@ interface MessageRequestResult {
     SHP_LOGIN: string;
     LCKTNUMERO : string;
     REPRESENTANT : string;
+    CTCTPRENOM: string  | null;
+    CTCTNOM: string | null;
 }
 
 interface MapOfRequestResult {
@@ -76,9 +78,13 @@ export default (reqCommandes: commandRequestResult[], reqMessages: MessageReques
             createdAt: message.CREATED_AT,
             message: message.MESSAGE_TEXT,
             isRead: Number(message.IS_READ) === 1 ? true : false,
-            spAccount : message.SHP_LOGIN,
+            spAccount : message.SHP_LOGIN.trim(),
             cde : String(message.LCKTNUMERO),
-            rep : message.REPRESENTANT
+            rep : message.REPRESENTANT,
+            contact : {
+                firstName : message.CTCTNOM !== undefined ? message.CTCTNOM?.trim() : undefined,
+                lastName : message.CTCTPRENOM !== undefined  ? message.CTCTPRENOM?.trim() : undefined
+            }
         };
         }
     ), mapOfRequestResult: MapOfRequestResult[] = reqCommandes.map((item: commandRequestResult) => {

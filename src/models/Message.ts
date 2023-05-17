@@ -1,3 +1,8 @@
+interface Contact {
+    firstName : string | undefined;
+    lastName : string | undefined;
+}
+
 export default interface Message {
     createdAt: Date;
     message: string;
@@ -5,4 +10,5 @@ export default interface Message {
     spAccount: string;
     cde: string;
     rep: string;
+    contact?: Contact;
 }
