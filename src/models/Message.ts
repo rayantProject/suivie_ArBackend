@@ -11,4 +11,5 @@ export default interface Message {
     cde: string;
     rep: string;
     contact?: Contact;
+    pbDelai: boolean;
 }

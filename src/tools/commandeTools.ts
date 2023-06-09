@@ -135,4 +135,3 @@ return commandesByReps.sort((a:CommandeByRep, b: CommandeByRep) => a.repName.loc
 
 }
 
-

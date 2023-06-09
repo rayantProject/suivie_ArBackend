@@ -17,20 +17,20 @@ u.VALIDCOM,u.DELDDEPREC, e.ECCTREFCDE,e.ECCTCODE, e.ECCTNOM, e.ECCTNOMLIV,e.ECCT
 from LCOMCLI as l 
 join ULCOMCLI as u on u.LCKTSOC=l.LCKTSOC and u.LCKTNUMERO=l.LCKTNUMERO and u.LCKTLIGNE=l.LCKTLIGNE  
 right join ECOMCLI as e on e.ECKTSOC=l.LCKTSOC and e.ECKTNUMERO=l.LCKTNUMERO
-where l.LCKTSOC='100' and ((l.LCKTNUMERO>'024000' and l.LCKTNUMERO<'100000') or (l.LCKTNUMERO>'500000' and l.LCKTNUMERO<'599999')) and l.LCCTTYPE<>'P' 
-and ((LCCTSOLACE<>'S') or (LCCTSOLACE='S' and LCCJDEREX> dateadd(day,-15,getdate()))) and l.LCCTNATURE<>'7'
+where l.LCKTSOC='100' and (((l.LCKTNUMERO>'024000' and l.LCKTNUMERO<'100000') or (l.LCKTNUMERO>'500000' and l.LCKTNUMERO<'599999')) and l.LCCTTYPE<>'P' 
+and ((LCCTSOLACE<>'S') or (LCCTSOLACE='S' and LCCJDEREX> dateadd(day,-15,getdate()))) and l.LCCTNATURE<>'7' ) or ( l.LCKTNUMERO like '%ESSAI%')
 `,
 
 
 
 requestMessages = `use ${dbname}
 use PMI
-select MESSAGE_TEXT, CREATED_AT,IS_READ,SHP_LOGIN,LCKTNUMERO,REPRESENTANT, c.CTCTPRENOM, c.CTCTNOM from MESSAGES 
+select MESSAGE_TEXT, CREATED_AT,IS_READ,SHP_LOGIN,LCKTNUMERO, PB_DELAI, REPRESENTANT, c.CTCTPRENOM, c.CTCTNOM from MESSAGES 
 join CONTACT as c on c.CTCTUTIL6 = MESSAGES.SHP_LOGIN
 where MESSAGES.LCKTNUMERO in (
     select LCKTNUMERO from LCOMCLI as l 
-	where l.LCKTSOC='100' and ((l.LCKTNUMERO>'024000' and l.LCKTNUMERO<'100000') or (l.LCKTNUMERO>'500000' and l.LCKTNUMERO<'599999')) and l.LCCTTYPE<>'P' 
-	and ((LCCTSOLACE<>'S') or (LCCTSOLACE='S' and LCCJDEREX> dateadd(day,-15,getdate()))) and l.LCCTNATURE<>'7' 
+	where l.LCKTSOC='100' and (((l.LCKTNUMERO>'024000' and l.LCKTNUMERO<'100000') or (l.LCKTNUMERO>'500000' and l.LCKTNUMERO<'599999')) and l.LCCTTYPE<>'P' 
+	and ((LCCTSOLACE<>'S') or (LCCTSOLACE='S' and LCCJDEREX> dateadd(day,-15,getdate()))) and l.LCCTNATURE<>'7') or ( l.LCKTNUMERO like '%ESSAI%')
 )
 ORDER BY CREATED_AT DESC
 
@@ -73,9 +73,3 @@ export const getCommandes = async (req: Request, res: Response, next: NextFuncti
 
 
 
-const rq = `use ${dbname}
-select * from MESSAGE where MESSAGE.LCKTNUMERO=(
-    select LCKTNUMERO from LCOMCLI where LCKTNUMERO='024000' and LCKTLIGNE='000' and LCKTSOC='100'
-)
-
-`

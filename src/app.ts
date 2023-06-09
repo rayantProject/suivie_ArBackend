@@ -21,6 +21,21 @@ import ipFilter from './middleware/IpFilter';
 //     req.ip = req.ips[0] || req.ip;
 //     next();
 // });
+//  cors options
+// const corsOptions = {
+//     origin: 'http://localhost:4200',
+//     optionsSuccessStatus: 200
+// };
+
+//  access control allow origin
+
+// app.use((req, res, next) => {
+//     res.header('Access-Control-Allow-Origin', '*');
+//     next();
+// });
+
+//  cors middleware
+// app.use(cors(corsOptions));
 
 
 const app = express();
@@ -36,10 +51,12 @@ app.use(cors(
         origin: '*',
         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
         allowedHeaders: 'Content-Type,Authorization',
-        credentials: true
-
+        credentials: true,
+        preflightContinue: false,
+        optionsSuccessStatus: 204
     }
 ));
+
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 if (err.code === 'EADDRINUSE') {
@@ -55,7 +72,8 @@ app.use(
     (req: Request, res: Response, next: NextFunction) => {
         const referer = req.headers.referer || req.headers.referrer;
 
-        if (referer && referer.includes('lec69009.sharepoint') || referer && referer.includes('localhost')) {
+        if (referer && referer.includes('lec69009.sharepoint') || referer && referer.includes('localhost')) 
+        {
             next();
         }else{
             
@@ -63,9 +81,15 @@ app.use(
         }
     }
 );
+
+const date = new Date();
+const timezoneOffset = date.getTimezoneOffset();
+const dateFromDatabase = new Date('2023-06-06T09:35:00Z');
+console.log(dateFromDatabase.toString()); // Affiche la date et l'heure actuelles avec le fuseau horaire par défaut
+console.log(date.toString()); // Affiche la date et l'heure actuelles avec le fuseau horaire par défaut
+console.log('Timezone offset:', timezoneOffset); // Affiche le décalage en minutes par rapport à l'heure UTC
+
 app.use('/api', routes);
 app.use("*",  ErrorHandle.error404);
 app.use(ErrorHandle.error500);
-
-
 app.listen(port, () => {console.log(`Server running on port ${port}`)});

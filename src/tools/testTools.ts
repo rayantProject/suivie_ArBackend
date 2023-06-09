@@ -39,6 +39,7 @@ interface MessageRequestResult {
     REPRESENTANT : string;
     CTCTPRENOM: string  | null;
     CTCTNOM: string | null;
+    PB_DELAI: boolean;
 }
 
 interface MapOfRequestResult {
@@ -84,7 +85,8 @@ export default (reqCommandes: commandRequestResult[], reqMessages: MessageReques
             contact : {
                 firstName : message.CTCTNOM !== undefined ? message.CTCTNOM?.trim() : undefined,
                 lastName : message.CTCTPRENOM !== undefined  ? message.CTCTPRENOM?.trim() : undefined
-            }
+            },
+            pbDelai : Number(message.PB_DELAI) ? true : false
         };
         }
     ), mapOfRequestResult: MapOfRequestResult[] = reqCommandes.map((item: commandRequestResult) => {

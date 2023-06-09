@@ -28,6 +28,7 @@ const getConfig = (
                     parallel: false,
                 },
                 onBuildEnd: {
+                    // scripts: ["pm2 start build/index.js --watch"],
                     scripts: ["nodemon build/index.js --watch build"],
                     blocking: false,
                     parallel: true,

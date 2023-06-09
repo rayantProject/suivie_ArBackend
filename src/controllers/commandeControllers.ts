@@ -87,3 +87,74 @@ export const updateDelaiprec = async (req: Request, res: Response, next: NextFun
     }
 }
 
+
+// ALTER TABLE nom_de_la_table
+
+// ADD CONSTRAINT DF_nom_de_la_colonne DEFAULT (nouvelle_valeur_par_defaut) FOR nom_de_la_colonne;
+// (async () => { 
+//     try {
+//         await pool.connect();
+//         const result = await pool.request().query(
+//             `
+//             use ${dbname}
+//             ALTER TABLE MESSAGES
+//             ADD CONSTRAINT CREATED_AT DEFAULT  SYSUTCDATETIME() FOR CREATED_AT;
+//             ;
+//             `
+//         );
+//        console.table(result.recordset);
+//     } catch (err) {
+//         console.error(err);
+//     }
+// })();
+// (async () => { 
+//     try {
+//         await pool.connect();
+//         const result = await pool.request().query(
+//             `use ${dbname}
+//             SELECT 
+//                 column_name,
+//                 data_type,
+//                 character_maximum_length,
+//                 is_nullable,
+//                 column_default
+//             FROM 
+//                 information_schema.columns
+//             WHERE 
+//                 table_name = 'MESSAGES';
+//             `
+
+
+//         );
+//        console.table(result.recordset);
+//     } catch (err) {
+//         console.error(err);
+//     }
+// })();
+interface IVersion {
+    goodVersion: string;
+    status: | 'ok' | 'warning' | 'error';
+    why? : string;
+
+}
+const goodVersion = "2.0.1.0";
+export const getVersion = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const spVersion = req.params.spVersion
+        .split('.').length === 4 ? req.params.spVersion.split('.') : ['0','0','0','0'];
+        const goodVersionSplit = goodVersion.split('.');
+        let status: 'ok' | 'warning' | 'error' = 'ok';
+        if (spVersion[0] !== goodVersionSplit[0]) status = 'error';
+        else if (spVersion[1] !== goodVersionSplit[1]) status = 'warning';
+        else if (spVersion[2] !== goodVersionSplit[2]) status = 'warning';
+        else if (spVersion[3] !== goodVersionSplit[3]) status = 'warning';
+        const version: IVersion = {
+            goodVersion,
+            status,
+            why: status === 'ok' ? undefined : `La version de votre application est ${req.params.spVersion} et la version de l'api est ${goodVersion}`
+        }
+        res.status(200).send(version);
+    } catch (err) {
+        next(err);
+    }
+}
